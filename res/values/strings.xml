@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, UnibasDashboardActivity!</string>
+    <string name="app_name">UnibasDashboard</string>
+    <string name="title">Dashboard Uni Basel</string>
+</resources>

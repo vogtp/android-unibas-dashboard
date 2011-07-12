@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:id="@+id/llMain" style="@style/appWindow">
+	<TextView style="@style/topBar" android:layout_height="wrap_content"
+		android:layout_width="fill_parent" android:id="@+id/topbar"
+		android:text="@string/title" android:layout_gravity="center_vertical"></TextView>
+	<GridView style="@style/appGrid" android:layout_width="fill_parent"
+		android:id="@+id/gvApps" android:layout_height="fill_parent"
+		android:layout_gravity="top" android:layout_weight=".9"></GridView>
+	<LinearLayout android:id="@+id/linearLayout1"
+		android:orientation="vertical" android:layout_height="wrap_content"
+		android:layout_width="fill_parent">
+		<TextView android:layout_height="wrap_content" android:id="@+id/bottombar"
+			style="@style/bottomBar" android:layout_width="wrap_content"></TextView>
+	</LinearLayout>
+</LinearLayout>
