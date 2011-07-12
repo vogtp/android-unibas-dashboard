@@ -2,7 +2,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android"> 
     <style name="appWindow">
         <item name="android:orientation">vertical</item>
-        <item name="android:background">#309ABF</item>
+        <item name="android:background">#1ca6d4</item>
     </style>
     <style name="topBar" parent="android:Widget.TextView">
     	<item name="android:padding">5dp</item>
