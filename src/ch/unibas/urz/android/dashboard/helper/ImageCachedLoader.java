@@ -39,6 +39,29 @@ public class ImageCachedLoader {
 		Logger.d("Got image url " + url);
 		return url;
 	}
+
+	/**
+	 * 
+	 * @param context
+	 * @param iconName
+	 * @return the bitmap of the image or null if not found
+	 */
+	public static Bitmap getImageBitmapFromCache(Context context, String iconName) {
+		String imagePath = buildFilePath(context, iconName);
+		Bitmap bm = loadFromFile(imagePath);
+		int width = -1;
+		int height = -1;
+		if (bm != null) {
+			width = bm.getWidth();
+			height = bm.getHeight();
+			Logger.v("Got bitmap " + imagePath + " with " + width + " height " + height);
+		}
+		if (width < MIN_IMAGE_DIM && height < MIN_IMAGE_DIM) {
+			bm = null;
+		}
+		return bm;
+	}
+
 	public static Bitmap getImageBitmapFromNetwork(Context context, String iconName) {
 		String imagePath = buildFilePath(context, iconName);
 		Bitmap bm = loadFromFile(imagePath);

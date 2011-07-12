@@ -1,9 +1,9 @@
 package ch.unibas.urz.android.dashboard.view.activity;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +21,8 @@ import ch.unibas.urz.android.dashboard.provider.db.DB;
 
 public class UnibasDashboardActivity extends Activity {
 	private GridView gvApps;
-	private ProgressDialog progressDialog;
+	// private ProgressDialog progressDialog;
+	private Cursor appsCursor;
 
 	/** Called when the activity is first created. */
     @Override
@@ -33,11 +34,11 @@ public class UnibasDashboardActivity extends Activity {
 
 		gvApps = (GridView) findViewById(R.id.gvApps);
 
-		final Cursor c = managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, null, null, DB.DashboardApp.SORTORDER_DEFAULT);
+		appsCursor = managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, null, null, DB.DashboardApp.SORTORDER_DEFAULT);
 
 		String[] from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON };
 		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, c, from, to);
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, appsCursor, from, to);
 		gvApps.setAdapter(adapter );
 		adapter.setViewBinder(new ViewBinder() {
 			
@@ -52,7 +53,20 @@ public class UnibasDashboardActivity extends Activity {
 				});
 
 				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
-					((ImageView) view).setImageBitmap(ImageCachedLoader.getImageBitmapFromNetwork(UnibasDashboardActivity.this, am.getIcon()));
+					ImageView image = (ImageView) view;
+					// if (am.getName().toLowerCase().contains("perssearch")) {
+					// image.setImageResource(R.drawable.perssearch2);
+					// } else if
+					// (am.getName().toLowerCase().contains("flexiform")) {
+					// image.setImageResource(R.drawable.flexiform2);
+					// } else {
+					Bitmap bitmap = ImageCachedLoader.getImageBitmapFromCache(UnibasDashboardActivity.this, am.getIcon());
+					if (bitmap != null) {
+						image.setImageBitmap(bitmap);
+					} else {
+						image.setImageResource(R.drawable.unibasel_with_bg);
+					}
+					// }
 				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {
 					((TextView) view).setText(am.getName());
 				}
@@ -64,10 +78,10 @@ public class UnibasDashboardActivity extends Activity {
 
 	private void initaliseData() {
 		// FIXME check for last check
-		progressDialog = new ProgressDialog(this);
-		progressDialog.setTitle("Updating App Information");
-		progressDialog.setMessage("Loading Icons");
-		progressDialog.show();
+		// progressDialog = new ProgressDialog(this);
+		// progressDialog.setTitle("Updating App Information");
+		// progressDialog.setMessage("Loading Icons");
+		// progressDialog.show();
 		AsyncDataLoader adl = new AsyncDataLoader(this);
 		adl.execute(this);
 	}
@@ -88,12 +102,13 @@ public class UnibasDashboardActivity extends Activity {
 	}
 
 	public void loadingFinished() {
-		if (progressDialog != null && progressDialog.isShowing()) {
-			try {
-				progressDialog.dismiss();
-			} catch (Exception e) {
-				// if device rotated this will throw... do we care?
-			}
-		}
+		appsCursor.requery();
+		// if (progressDialog != null && progressDialog.isShowing()) {
+		// try {
+		// progressDialog.dismiss();
+		// } catch (Exception e) {
+		// // if device rotated this will throw... do we care?
+		// }
+		// }
 	}
 }
