@@ -101,7 +101,6 @@ public class ImageCachedLoader {
 	private static Bitmap loadFromFile(InputStream is) {
 		Bitmap bm = null;
 		try {
-			// FileInputStream fis = new FileInputStream(imagePath);
 			bm = BitmapFactory.decodeStream(is);
 			is.close();
 		} catch (IOException e) {
@@ -166,9 +165,6 @@ public class ImageCachedLoader {
 			is.close();
 		} catch (Exception e) {
 			Logger.e("Error getting bitmap", e);
-		}
-		if (bm == null) {
-			bm = createEmptyBitmap();
 		}
 		return bm;
 	}
