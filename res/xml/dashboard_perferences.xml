@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceScreen android:key="prefKeyUpdateScreen"
-		android:title="@string/prefUpdate" android:summary="@string/prefUpdateLong">
-		<Preference android:key="prefKeyLastUpdate"
-			android:summary="@string/prefLastUpdateLong" android:title="@string/prefLastUpdate"></Preference>
-		<ListPreference android:title="@string/prefUpdateFrequency"
-			android:summary="@string/prefUpdateFrequencyLong" android:key="prefKeyUpdateFrequency"
-			android:entryValues="@array/prefUpdateFrequencyValues"
-			android:entries="@array/prefUpdateFrequencyEntries"
-			android:defaultValue="3"></ListPreference>
-		<Preference android:summary="@string/prefUpdateNowLong"
-			android:key="prefkeyUpdateNow" android:title="@string/prefkeyUpdateNow"></Preference>
+	
+	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:key="prefKeyGui" android:title="@string/prefGui">
+		<ListPreference android:title="@string/prefAppListStyle" android:key="prefKeyAppListStyle" android:defaultValue="1" android:entryValues="@array/prefAppListStyleValues" android:entries="@array/prefAppListStyleEntries"></ListPreference>
+	</PreferenceScreen><PreferenceScreen android:key="prefKeyUpdateScreen" android:title="@string/prefUpdate" android:summary="@string/prefUpdateLong">
+		<Preference android:key="prefKeyLastUpdate" android:summary="@string/prefLastUpdateLong" android:title="@string/prefLastUpdate"></Preference>
+		<ListPreference android:title="@string/prefUpdateFrequency" android:summary="@string/prefUpdateFrequencyLong" android:key="prefKeyUpdateFrequency" android:entryValues="@array/prefUpdateFrequencyValues" android:entries="@array/prefUpdateFrequencyEntries" android:defaultValue="3"></ListPreference>
+		<Preference android:summary="@string/prefUpdateNowLong" android:key="prefkeyUpdateNow" android:title="@string/prefkeyUpdateNow"></Preference>
 	</PreferenceScreen>
 </PreferenceScreen>

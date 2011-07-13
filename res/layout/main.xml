@@ -6,17 +6,22 @@
 		android:layout_width="fill_parent" android:id="@+id/topbar"
 		android:layout_weight=".1" android:text="@string/title"
 		android:layout_gravity="center_vertical"></TextView>
-	<GridView style="@style/appGrid" android:layout_width="fill_parent"
-		android:id="@+id/gvApps" android:layout_height="fill_parent"
-		android:layout_gravity="top" android:layout_weight="1.9"></GridView>
+	<LinearLayout android:layout_weight="1.9"
+		android:layout_height="fill_parent" android:orientation="vertical" android:id="@+id/llAppsAncor" android:layout_width="fill_parent">
+		<GridView style="@style/appGrid" android:numColumns="3"
+			android:layout_width="fill_parent" android:layout_height="fill_parent"
+			android:layout_gravity="top" android:layout_weight="1.9" android:id="@+id/gvApps"></GridView>
+		<ListView 
+			android:layout_width="fill_parent" android:layout_height="fill_parent" android:background="@android:color/white"
+			android:layout_gravity="top" android:layout_weight="1.9" android:id="@+id/lvApps"></ListView>
+	</LinearLayout>
 	<LinearLayout android:layout_weight="1.9" android:id="@+id/linearLayout1"
 		android:layout_height="wrap_content" android:orientation="horizontal"
 		android:layout_width="fill_parent">
 		<ImageView android:layout_weight=".5"
 			android:layout_gravity="left|bottom" android:id="@+id/imageView1"
 			android:src="@drawable/unituerkis" android:minHeight="200dp"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"></ImageView>
+			android:layout_width="wrap_content" android:layout_height="wrap_content"></ImageView>
 		<TextView android:id="@+id/textView1" android:layout_weight="1.1"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
 	</LinearLayout>

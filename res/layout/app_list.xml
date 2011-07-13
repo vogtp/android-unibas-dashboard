@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:padding="5dp" android:id="@+id/llApp"
+	android:orientation="horizontal" android:layout_height="wrap_content">
+	<ImageView android:src="@drawable/unibasel_with_bg"
+		android:layout_height="wrap_content" android:layout_gravity="center_vertical"
+		android:id="@+id/ivAppIcon" android:layout_width="wrap_content" android:layout_margin="5dp"></ImageView>
+	<LinearLayout android:layout_height="fill_parent"
+		android:id="@+id/linearLayout1" android:orientation="vertical"
+		android:layout_width="fill_parent">
+		<TextView android:id="@+id/tvAppName" android:text="TextView"
+			android:ellipsize="marquee" android:layout_gravity="center|center_horizontal"
+			android:lines="1" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:textStyle="bold" android:layout_margin="5dp"></TextView>
+		<TextView android:id="@+id/tvDescription" android:text="TextView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="5dp"></TextView>
+	</LinearLayout>
+
+</LinearLayout>

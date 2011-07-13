@@ -14,11 +14,14 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
@@ -35,9 +38,10 @@ import ch.unibas.urz.android.dashboard.provider.db.DB.DashboardApp;
 import ch.unibas.urz.android.dashboard.view.preferences.DashboardPreferenceActivity;
 
 public class UnibasDashboardActivity extends Activity implements LoaderCallback {
-	private GridView gvApps;
+	private AbsListView appsList;
 	private Cursor appsCursor;
 	private boolean showHidden = false;
+	private int currentAppListStyle = -1;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -47,11 +51,102 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 			AsyncDataLoader.loadData(this);
 		}
 		setTheme(android.R.style.Theme_NoTitleBar);
+
+		initList();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		initList();
+	}
+
+	private void initList() {
+		int appListStyle = Settings.getInstance().getAppListStyle();
+		if (currentAppListStyle == appListStyle) {
+			return;
+		}
 		setContentView(R.layout.main);
-
-		gvApps = (GridView) findViewById(R.id.gvApps);
-
+		LinearLayout llAppsAncor = (LinearLayout) findViewById(R.id.llAppsAncor);
+		ListView lvApps = (ListView) findViewById(R.id.lvApps);
+		GridView gvApps = (GridView) findViewById(R.id.gvApps);
+		if (appsCursor != null && !appsCursor.isClosed()) {
+			appsCursor.close();
+		}
+		if (appListStyle == Settings.APP_LIST_GRID) {
+			llAppsAncor.removeView(lvApps);
+			appsList = gvApps;
+		} else {
+			llAppsAncor.removeView(gvApps);
+			appsList =  lvApps;
+		}
+		currentAppListStyle = appListStyle;
 		queryDatabase();
+	}
+
+	private void queryDatabase() {
+		String selection = null;
+		if (!showHidden) {
+			selection = DB.DashboardApp.NAME_HIDE + "=0";
+		}
+		appsCursor = managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, selection, null, DB.DashboardApp.SORTORDER_DEFAULT);
+
+		String[] from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON };
+		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
+		int res = R.layout.app_grid;
+		if (currentAppListStyle == Settings.APP_LIST_LIST) {
+			res = R.layout.app_list;
+			from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON, DB.DashboardApp.NAME_DESCRIPTION };
+			to = new int[] { R.id.tvAppName, R.id.ivAppIcon, R.id.tvDescription };
+
+		}
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, res, appsCursor, from, to);
+		appsList.setAdapter(adapter);
+		appsList.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				AppModel am = getAppModelFromId(id);
+				if (am != null) {
+					startApp(am);
+				}
+			}
+		});
+
+		appsList.setOnCreateContextMenuListener(this);
+
+		adapter.setViewBinder(new ViewBinder() {
+
+			@Override
+			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+				final AppModel am = new AppModel(cursor);
+
+				view.setContentDescription(am.getDescription());
+
+				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
+					ImageView image = (ImageView) view;
+					// if (am.getName().toLowerCase().contains("perssearch")) {
+					// image.setImageResource(R.drawable.perssearch2);
+					// } else if
+					// (am.getName().toLowerCase().contains("flexiform")) {
+					// image.setImageResource(R.drawable.flexiform2);
+					// } else {
+					Bitmap bitmap = ImageCachedLoader.getImageBitmapFromCache(UnibasDashboardActivity.this, am.getIcon());
+					if (bitmap != null) {
+						image.setImageBitmap(bitmap);
+					} else {
+						image.setImageResource(R.drawable.unibasel_with_bg);
+					}
+					// }
+				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {
+					((TextView) view).setText(am.getName());
+				}
+				if (DB.DashboardApp.INDEX_DESCRIPTION == columnIndex) {
+					((TextView) view).setText(am.getDescription());
+				}
+
+				return true;
+			}
+		});
 	}
 
 	private void startApp(final AppModel appModel) {
@@ -60,7 +155,6 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 				Toast.makeText(this, R.string.msg_unable_to_start, Toast.LENGTH_LONG).show();
 			}
 		}
-
 	}
 
 	private boolean startWebApp(AppModel appModel) {
@@ -163,60 +257,6 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		}
 	}
 
-	private void queryDatabase() {
-		String selection = null;
-		if (!showHidden) {
-			selection = DB.DashboardApp.NAME_HIDE + "=0";
-		}
-		appsCursor = managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, selection, null, DB.DashboardApp.SORTORDER_DEFAULT);
-
-		String[] from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON };
-		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, appsCursor, from, to);
-		gvApps.setAdapter(adapter);
-		gvApps.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				AppModel am = getAppModelFromId(id);
-				if (am != null) {
-					startApp(am);
-				}
-			}
-		});
-
-		gvApps.setOnCreateContextMenuListener(this);
-
-		adapter.setViewBinder(new ViewBinder() {
-
-			@Override
-			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				final AppModel am = new AppModel(cursor);
-
-				view.setContentDescription(am.getDescription());
-
-				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
-					ImageView image = (ImageView) view;
-					// if (am.getName().toLowerCase().contains("perssearch")) {
-					// image.setImageResource(R.drawable.perssearch2);
-					// } else if
-					// (am.getName().toLowerCase().contains("flexiform")) {
-					// image.setImageResource(R.drawable.flexiform2);
-					// } else {
-					Bitmap bitmap = ImageCachedLoader.getImageBitmapFromCache(UnibasDashboardActivity.this, am.getIcon());
-					if (bitmap != null) {
-						image.setImageBitmap(bitmap);
-					} else {
-						image.setImageResource(R.drawable.unibasel_with_bg);
-					}
-					// }
-				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {
-					((TextView) view).setText(am.getName());
-				}
-
-				return true;
-			}
-		});
-	}
 
 	@Override
 	public Context getContext() {

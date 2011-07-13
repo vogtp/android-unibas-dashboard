@@ -20,10 +20,10 @@ public interface DB {
 
 		private static final int DATABASE_VERSION = 2;
 
-		private static final String CREATE_TRIGGERS_TABLE = "create table if not exists " + DashboardApp.TABLE_NAME + " (" + DB.NAME_ID + " integer primary key, "
+		private static final String CREATE_APPS_TABLE = "create table if not exists " + DashboardApp.TABLE_NAME + " (" + DB.NAME_ID + " integer primary key, "
 				+ DB.DashboardApp.NAME_APPNAME + " text, " + DB.DashboardApp.NAME_APPID + " int," + DB.DashboardApp.NAME_LABEL + " text," + DB.DashboardApp.NAME_DESCRIPTION + " text,"
  + DB.DashboardApp.NAME_URL + " text," + DB.DashboardApp.NAME_ICON + " text," + DB.DashboardApp.NAME_PACKAGE + " text, " + DB.DashboardApp.NAME_HIDE
-				+ "int default 0)";
+				+ " int default 0)";
 
 
 		public OpenHelper(Context context) {
@@ -32,7 +32,7 @@ public interface DB {
 
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(CREATE_TRIGGERS_TABLE);
+			db.execSQL(CREATE_APPS_TABLE);
 			// db.execSQL("create index idx_app_id on " +
 			// DashboardApp.TABLE_NAME + " (" + DashboardApp.NAME_APPID +
 			// "); ");

@@ -38,4 +38,14 @@
     <string name="itemHideOn">Show hidden apps</string>
     <string name="show">Show</string>
     <string name="hide">Hide</string>
+    <string name="prefGui">GUI</string>
+    <string name="prefAppListStyle">App list sytle</string>
+    <string-array name="prefAppListStyleEntries">
+        <item>Grid</item>
+        <item>List</item>
+    </string-array>
+    <string-array name="prefAppListStyleValues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
