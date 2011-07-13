@@ -73,6 +73,7 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		} else {
 			setTheme(android.R.style.Theme_NoTitleBar);
 			setContentView(R.layout.main_unibas);
+
 		}
 		LinearLayout llAppsAncor = (LinearLayout) findViewById(R.id.llAppsAncor);
 		ListView lvApps = (ListView) findViewById(R.id.lvApps);
