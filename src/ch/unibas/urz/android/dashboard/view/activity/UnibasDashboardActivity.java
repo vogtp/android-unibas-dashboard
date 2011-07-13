@@ -2,12 +2,15 @@ package ch.unibas.urz.android.dashboard.view.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.GridView;
@@ -18,12 +21,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import ch.unibas.urz.android.dashboard.R;
 import ch.unibas.urz.android.dashboard.helper.AsyncDataLoader;
+import ch.unibas.urz.android.dashboard.helper.AsyncDataLoader.LoaderCallback;
 import ch.unibas.urz.android.dashboard.helper.ImageCachedLoader;
 import ch.unibas.urz.android.dashboard.helper.Logger;
+import ch.unibas.urz.android.dashboard.helper.Settings;
 import ch.unibas.urz.android.dashboard.model.AppModel;
 import ch.unibas.urz.android.dashboard.provider.db.DB;
+import ch.unibas.urz.android.dashboard.view.preferences.DashboardPreferenceActivity;
 
-public class UnibasDashboardActivity extends Activity {
+public class UnibasDashboardActivity extends Activity implements LoaderCallback {
 	private GridView gvApps;
 	// private ProgressDialog progressDialog;
 	private Cursor appsCursor;
@@ -32,7 +38,9 @@ public class UnibasDashboardActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		initaliseData();
+		if (Settings.getInstance().isUpdateNeeded()) {
+			AsyncDataLoader.loadData(this);
+		}
 		setTheme(android.R.style.Theme_NoTitleBar);
 		setContentView(R.layout.main);
 
@@ -55,6 +63,7 @@ public class UnibasDashboardActivity extends Activity {
 						startApp(am);
 					}
 				});
+				view.setContentDescription(am.getDescription());
 
 				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
 					ImageView image = (ImageView) view;
@@ -80,11 +89,7 @@ public class UnibasDashboardActivity extends Activity {
 		});
 	}
 
-	private void initaliseData() {
-		// FIXME check for last check
-		AsyncDataLoader adl = new AsyncDataLoader(this);
-		adl.execute(this);
-	}
+
 
 	private void startApp(final AppModel appModel) {
 		if (!startNativeApp(appModel)) {
@@ -158,7 +163,32 @@ public class UnibasDashboardActivity extends Activity {
 		return false;
 	}
 
+	@Override
 	public void loadingFinished() {
 		appsCursor.requery();
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		getMenuInflater().inflate(R.menu.general_option_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.itemPreferences:
+			startActivity(new Intent(this, DashboardPreferenceActivity.class));
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	@Override
+	public Context getContext() {
+		return this;
+	}
+
 }

@@ -5,7 +5,7 @@
 	<uses-sdk android:minSdkVersion="7" />
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
-	<application android:label="@string/app_name" android:icon="@drawable/unibasel_with_bg">
+	<application android:label="@string/app_name" android:icon="@drawable/unibasel_with_bg" android:name=".application.DashboardApplication">
 		<activity android:name=".view.activity.UnibasDashboardActivity"
 			android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
 			<intent-filter>
@@ -15,6 +15,7 @@
 		</activity>
 		<provider android:name=".provider.DashboardAppProvider"
 			android:authorities="ch.unibas.urz.android.dashboard"></provider>
+		<activity android:name=".view.preferences.DashboardPreferenceActivity"></activity>
 
 	</application>
 </manifest>

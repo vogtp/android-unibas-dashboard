@@ -1,30 +1,35 @@
 package ch.unibas.urz.android.dashboard.helper;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import ch.unibas.urz.android.dashboard.access.JsonLoader;
 import ch.unibas.urz.android.dashboard.provider.db.DB;
-import ch.unibas.urz.android.dashboard.view.activity.UnibasDashboardActivity;
 
 public class AsyncDataLoader extends AsyncTask<Object, Object, Object> {
 
-	private final UnibasDashboardActivity dashboardActivity;
+	private final LoaderCallback loaderCallback;
 
-	public AsyncDataLoader(UnibasDashboardActivity dashboardActivity) {
+	public interface LoaderCallback {
+		public Context getContext();
+
+		public void loadingFinished();
+	}
+
+	public AsyncDataLoader(LoaderCallback loaderCallback) {
 		super();
-		this.dashboardActivity = dashboardActivity;
+		this.loaderCallback = loaderCallback;
 	}
 
 	@Override
 	protected Object doInBackground(Object... params) {
-
-		JsonLoader.loadApps(dashboardActivity);
+		Context ctx = loaderCallback.getContext();
+		JsonLoader.loadApps(ctx);
 		Cursor c = null;
 		try {
-			c = dashboardActivity.managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, null, null, DB.DashboardApp.SORTORDER_DEFAULT);
+			c = ctx.getContentResolver().query(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, null, null, DB.DashboardApp.SORTORDER_DEFAULT);
 			while (c.moveToNext()) {
-				ImageCachedLoader.getImageBitmapFromNetwork(dashboardActivity, c.getString(DB.DashboardApp.INDEX_ICON));
-
+				ImageCachedLoader.getImageBitmapFromNetwork(ctx, c.getString(DB.DashboardApp.INDEX_ICON));
 			}
 		} finally {
 			if (c != null && !c.isClosed()) {
@@ -33,14 +38,20 @@ public class AsyncDataLoader extends AsyncTask<Object, Object, Object> {
 				} catch (Exception e) {
 				}
 			}
+			Settings.getInstance().setUpdateTimeNow();
 		}
 		return null;
 	}
 
 	@Override
 	protected void onPostExecute(Object result) {
-		dashboardActivity.loadingFinished();
+		loaderCallback.loadingFinished();
 		super.onPostExecute(result);
+	}
+
+	public static void loadData(LoaderCallback cb) {
+		AsyncDataLoader adl = new AsyncDataLoader(cb);
+		adl.execute(cb);
 	}
 
 }
