@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 
 public class Settings {
 
-	public final static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm");
+	public final static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 	private static final String UPDATE_TIME = "updateTime";
 
 	public static final int APP_LIST_LIST = 1;
