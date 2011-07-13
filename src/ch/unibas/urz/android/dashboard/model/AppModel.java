@@ -41,6 +41,7 @@ public class AppModel {
 	private String url;
 	private String packageName;
 	private String icon;
+	private boolean hide;
 
 	public AppModel() {
 		super();
@@ -56,6 +57,7 @@ public class AppModel {
 		url = c.getString(DB.DashboardApp.INDEX_URL);
 		packageName = c.getString(DB.DashboardApp.INDEX_PACKAGE);
 		icon = c.getString(DB.DashboardApp.INDEX_ICON);
+		hide = c.getInt(DB.DashboardApp.INDEX_HIDE) == 1;
 	}
 
 	public ContentValues getValues() {
@@ -70,6 +72,7 @@ public class AppModel {
 		values.put(DB.DashboardApp.NAME_URL, url);
 		values.put(DB.DashboardApp.NAME_PACKAGE, packageName);
 		values.put(DB.DashboardApp.NAME_ICON, icon);
+		values.put(DB.DashboardApp.NAME_HIDE, hide ? 1 : 0);
 		return values;
 	}
 
@@ -219,6 +222,14 @@ public class AppModel {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isHide() {
+		return hide;
+	}
+
+	public void setHide(boolean hide) {
+		this.hide = hide;
 	}
 
 }

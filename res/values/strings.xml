@@ -30,7 +30,12 @@
         <item>4</item>
         <item>5</item>
     </string-array>
-        <string name="msg_updating">Updating...</string>
-        <string name="itemLaunchApp">Launch App</string>
-        <string name="itemGotoWeb">Goto Webpage</string>
+    <string name="msg_updating">Updating...</string>
+    <string name="itemLaunchApp">Launch App</string>
+    <string name="itemGotoWeb">Goto Webpage</string>
+    <string name="itemHide">Toggle hide app</string>
+    <string name="itemHideOff">Hide hidden apps</string>
+    <string name="itemHideOn">Show hidden apps</string>
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
 </resources>

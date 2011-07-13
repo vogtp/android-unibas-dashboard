@@ -2,5 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item android:id="@+id/itemLaunchApp" android:title="@string/itemLaunchApp"></item>
 	<item android:id="@+id/itemGotoWeb" android:title="@string/itemGotoWeb"></item>
+	<item android:title="@string/itemHide" android:id="@+id/itemHideApp"></item>
 
 </menu>

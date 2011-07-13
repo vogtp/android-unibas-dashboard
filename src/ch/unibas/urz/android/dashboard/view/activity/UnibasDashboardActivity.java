@@ -36,8 +36,8 @@ import ch.unibas.urz.android.dashboard.view.preferences.DashboardPreferenceActiv
 
 public class UnibasDashboardActivity extends Activity implements LoaderCallback {
 	private GridView gvApps;
-	// private ProgressDialog progressDialog;
 	private Cursor appsCursor;
+	private boolean showHidden = false;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -51,54 +51,7 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 
 		gvApps = (GridView) findViewById(R.id.gvApps);
 
-		appsCursor = managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, null, null, DB.DashboardApp.SORTORDER_DEFAULT);
-
-		String[] from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON };
-		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, appsCursor, from, to);
-		gvApps.setAdapter(adapter);
-		gvApps.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				AppModel am = getAppModelFromId(id);
-				if (am != null) {
-					startApp(am);
-				}
-			}
-		});
-
-		gvApps.setOnCreateContextMenuListener(this);
-
-		adapter.setViewBinder(new ViewBinder() {
-
-			@Override
-			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				final AppModel am = new AppModel(cursor);
-
-				view.setContentDescription(am.getDescription());
-
-				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
-					ImageView image = (ImageView) view;
-					// if (am.getName().toLowerCase().contains("perssearch")) {
-					// image.setImageResource(R.drawable.perssearch2);
-					// } else if
-					// (am.getName().toLowerCase().contains("flexiform")) {
-					// image.setImageResource(R.drawable.flexiform2);
-					// } else {
-					Bitmap bitmap = ImageCachedLoader.getImageBitmapFromCache(UnibasDashboardActivity.this, am.getIcon());
-					if (bitmap != null) {
-						image.setImageBitmap(bitmap);
-					} else {
-						image.setImageResource(R.drawable.unibasel_with_bg);
-					}
-					// }
-				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {
-					((TextView) view).setText(am.getName());
-				}
-
-				return true;
-			}
-		});
+		queryDatabase();
 	}
 
 	private void startApp(final AppModel appModel) {
@@ -186,14 +139,83 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 	}
 
 	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		int res = R.string.itemHideOn;
+		if (showHidden) {
+			res = R.string.itemHideOff;
+		}
+		menu.findItem(R.id.itemToggleHide).setTitle(res);
+		return true;
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.itemPreferences:
 			startActivity(new Intent(this, DashboardPreferenceActivity.class));
 			return true;
+		case R.id.itemToggleHide:
+			showHidden = !showHidden;
+			queryDatabase();
+			return true;
 		default:
 			return false;
 		}
+	}
+
+	private void queryDatabase() {
+		String selection = null;
+		if (!showHidden) {
+			selection = DB.DashboardApp.NAME_HIDE + "=0";
+		}
+		appsCursor = managedQuery(DB.DashboardApp.CONTENT_URI, DB.DashboardApp.PROJECTION_DEFAULT, selection, null, DB.DashboardApp.SORTORDER_DEFAULT);
+
+		String[] from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON };
+		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, appsCursor, from, to);
+		gvApps.setAdapter(adapter);
+		gvApps.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				AppModel am = getAppModelFromId(id);
+				if (am != null) {
+					startApp(am);
+				}
+			}
+		});
+
+		gvApps.setOnCreateContextMenuListener(this);
+
+		adapter.setViewBinder(new ViewBinder() {
+
+			@Override
+			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+				final AppModel am = new AppModel(cursor);
+
+				view.setContentDescription(am.getDescription());
+
+				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
+					ImageView image = (ImageView) view;
+					// if (am.getName().toLowerCase().contains("perssearch")) {
+					// image.setImageResource(R.drawable.perssearch2);
+					// } else if
+					// (am.getName().toLowerCase().contains("flexiform")) {
+					// image.setImageResource(R.drawable.flexiform2);
+					// } else {
+					Bitmap bitmap = ImageCachedLoader.getImageBitmapFromCache(UnibasDashboardActivity.this, am.getIcon());
+					if (bitmap != null) {
+						image.setImageBitmap(bitmap);
+					} else {
+						image.setImageResource(R.drawable.unibasel_with_bg);
+					}
+					// }
+				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {
+					((TextView) view).setText(am.getName());
+				}
+
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -219,10 +241,13 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 			}
 			switch (item.getItemId()) {
 			case R.id.itemLaunchApp:
-				startApp(am);
+				startNativeApp(am);
 				break;
 			case R.id.itemGotoWeb:
 				startWebApp(am);
+				break;
+			case R.id.itemHideApp:
+				hideApp(am);
 				break;
 			}
 			return true;
@@ -231,8 +256,24 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 
 	}
 
+	private void hideApp(AppModel am) {
+		am.setHide(!am.isHide());
+		getContentResolver().update(DB.DashboardApp.CONTENT_URI, am.getValues(), DB.SELECTION_BY_ID, new String[] { "" + am.getDbid() });
+		// appsCursor.requery();
+	}
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		getMenuInflater().inflate(R.menu.app_context, menu);
+		AdapterContextMenuInfo mi = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		AppModel am = getAppModelFromId(mi.id);
+		menu.getItem(0).setVisible(am.hasPackage());
+		menu.getItem(1).setVisible(am.hasUrl());
+		int res = R.string.hide;
+		if (am.isHide()) {
+			res = R.string.show;
+		}
+		menu.getItem(2).setTitle(res);
 	}
+
 }

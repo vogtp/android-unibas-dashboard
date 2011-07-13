@@ -18,11 +18,12 @@ public interface DB {
 
 	public class OpenHelper extends SQLiteOpenHelper {
 
-		private static final int DATABASE_VERSION = 1;
+		private static final int DATABASE_VERSION = 2;
 
 		private static final String CREATE_TRIGGERS_TABLE = "create table if not exists " + DashboardApp.TABLE_NAME + " (" + DB.NAME_ID + " integer primary key, "
 				+ DB.DashboardApp.NAME_APPNAME + " text, " + DB.DashboardApp.NAME_APPID + " int," + DB.DashboardApp.NAME_LABEL + " text," + DB.DashboardApp.NAME_DESCRIPTION + " text,"
-				+ DB.DashboardApp.NAME_URL + " text," + DB.DashboardApp.NAME_ICON + " text," + DB.DashboardApp.NAME_PACKAGE + " text)";
+ + DB.DashboardApp.NAME_URL + " text," + DB.DashboardApp.NAME_ICON + " text," + DB.DashboardApp.NAME_PACKAGE + " text, " + DB.DashboardApp.NAME_HIDE
+				+ "int default 0)";
 
 
 		public OpenHelper(Context context) {
@@ -43,6 +44,7 @@ public interface DB {
 			switch (oldVersion) {
 			case 1:
 				Logger.w("Upgrading to DB Version 2...");
+				db.execSQL("alter table " + DashboardApp.TABLE_NAME + " add column " + DashboardApp.NAME_HIDE + " int  default 0;");
 				// nobreak
 
 
@@ -73,6 +75,7 @@ public interface DB {
 		public static final String NAME_URL = "apphtmlurl";
 		public static final String NAME_ICON = "appicon";
 		public static final String NAME_PACKAGE = "napploc";
+		public static final String NAME_HIDE = "hideApp";
 
 		public static final int INDEX_APPNAME = 1;
 		public static final int INDEX_APPID = 2;
@@ -81,8 +84,9 @@ public interface DB {
 		public static final int INDEX_URL = 5;
 		public static final int INDEX_ICON = 6;
 		public static final int INDEX_PACKAGE = 7;
+		public static final int INDEX_HIDE = 8;
 
-		public static final String[] colNames = new String[] { NAME_ID, NAME_APPNAME, NAME_APPID, NAME_LABEL, NAME_DESCRIPTION, NAME_URL, NAME_ICON, NAME_PACKAGE };
+		public static final String[] colNames = new String[] { NAME_ID, NAME_APPNAME, NAME_APPID, NAME_LABEL, NAME_DESCRIPTION, NAME_URL, NAME_ICON, NAME_PACKAGE, NAME_HIDE };
 
 		public static final String[] PROJECTION_DEFAULT = colNames;
 
