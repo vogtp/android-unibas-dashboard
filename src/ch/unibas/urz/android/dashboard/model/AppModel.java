@@ -57,7 +57,7 @@ public class AppModel {
 		url = c.getString(DB.DashboardApp.INDEX_URL);
 		packageName = c.getString(DB.DashboardApp.INDEX_PACKAGE);
 		icon = c.getString(DB.DashboardApp.INDEX_ICON);
-		hide = c.getInt(DB.DashboardApp.INDEX_HIDE) == 1;
+		setHide(c.getInt(DB.DashboardApp.INDEX_HIDE));
 	}
 
 	public ContentValues getValues() {
@@ -230,6 +230,10 @@ public class AppModel {
 
 	public void setHide(boolean hide) {
 		this.hide = hide;
+	}
+
+	public void setHide(int hide) {
+		this.hide = hide == 1;
 	}
 
 }

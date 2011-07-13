@@ -43,6 +43,7 @@ public class JsonLoader {
 		if (c.moveToFirst()) {
 			Logger.d("update " + am.getName());
 			am.setDbid(c.getLong(DB.INDEX_ID));
+				am.setHide(c.getInt(DB.DashboardApp.INDEX_HIDE));
 			contentResolver.update(DB.DashboardApp.CONTENT_URI, am.getValues(), DB.DashboardApp.SELECTION_BY_APPID, selectionArgs);
 		} else {
 			Logger.d("insert " + am.getName());
