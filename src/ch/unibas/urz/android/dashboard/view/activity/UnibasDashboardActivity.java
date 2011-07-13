@@ -9,10 +9,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
@@ -27,6 +31,7 @@ import ch.unibas.urz.android.dashboard.helper.Logger;
 import ch.unibas.urz.android.dashboard.helper.Settings;
 import ch.unibas.urz.android.dashboard.model.AppModel;
 import ch.unibas.urz.android.dashboard.provider.db.DB;
+import ch.unibas.urz.android.dashboard.provider.db.DB.DashboardApp;
 import ch.unibas.urz.android.dashboard.view.preferences.DashboardPreferenceActivity;
 
 public class UnibasDashboardActivity extends Activity implements LoaderCallback {
@@ -52,17 +57,24 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, appsCursor, from, to);
 		gvApps.setAdapter(adapter);
+		gvApps.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				AppModel am = getAppModelFromId(id);
+				if (am != null) {
+					startApp(am);
+				}
+			}
+		});
+
+		gvApps.setOnCreateContextMenuListener(this);
+
 		adapter.setViewBinder(new ViewBinder() {
 
 			@Override
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 				final AppModel am = new AppModel(cursor);
-				view.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						startApp(am);
-					}
-				});
+
 				view.setContentDescription(am.getDescription());
 
 				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
@@ -89,8 +101,6 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		});
 	}
 
-
-
 	private void startApp(final AppModel appModel) {
 		if (!startNativeApp(appModel)) {
 			if (!startWebApp(appModel)) {
@@ -101,7 +111,7 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 	}
 
 	private boolean startWebApp(AppModel appModel) {
-		if (appModel.hasUrl()) {
+		if (!appModel.hasUrl()) {
 			return false;
 		}
 		Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(appModel.getUrl()));
@@ -117,11 +127,10 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 	}
 
 	private boolean startNativeApp(final AppModel appModel) {
-		Intent intent = null;
 		if (!appModel.hasPackage()) {
 			return false;
 		}
-		intent = getPackageManager().getLaunchIntentForPackage(appModel.getPackageName());
+		Intent intent = getPackageManager().getLaunchIntentForPackage(appModel.getPackageName());
 		if (intent == null) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.title_install_native_app);
@@ -140,6 +149,7 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 				}
 			});
 			builder.create().show();
+			return true;
 		}
 		if (intent != null) {
 			try {
@@ -191,4 +201,38 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		return this;
 	}
 
+	private AppModel getAppModelFromId(long id) {
+		Cursor c = managedQuery(DB.DashboardApp.CONTENT_URI, DashboardApp.PROJECTION_DEFAULT, DB.SELECTION_BY_ID, new String[] { "" + id }, DashboardApp.SORTORDER_DEFAULT);
+		if (c.moveToFirst()) {
+			return new AppModel(c);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		if (item instanceof MenuItem) {
+			AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+			AppModel am = getAppModelFromId(menuInfo.id);
+			if (am == null) {
+				return false;
+			}
+			switch (item.getItemId()) {
+			case R.id.itemLaunchApp:
+				startApp(am);
+				break;
+			case R.id.itemGotoWeb:
+				startWebApp(am);
+				break;
+			}
+			return true;
+		}
+		return false;
+
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		getMenuInflater().inflate(R.menu.app_context, menu);
+	}
 }

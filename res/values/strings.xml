@@ -31,4 +31,6 @@
         <item>5</item>
     </string-array>
         <string name="msg_updating">Updating...</string>
+        <string name="itemLaunchApp">Launch App</string>
+        <string name="itemGotoWeb">Goto Webpage</string>
 </resources>

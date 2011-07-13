@@ -92,5 +92,6 @@ public interface DB {
 
 		public static final String SELECTION_BY_APPID = NAME_APPID + "=?";
 
+
 	}
 }

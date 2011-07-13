@@ -30,7 +30,7 @@ public class AppModel {
 	// }
 
 
-	public static final String NOT_FOUND_STR = "na";
+	public static final String NOT_FOUND_STR = "";
 	public static final int NOT_FOUND_INT = -1;
 
 	private long dbid = -1;
@@ -158,7 +158,7 @@ public class AppModel {
 
 	public String getPackageName() {
 		if (packageName == null) {
-			return "";
+			return NOT_FOUND_STR;
 		}
 		return packageName;
 	}
@@ -179,14 +179,14 @@ public class AppModel {
 		if (packageName == null) {
 			return false;
 		}
-		return !"".equals(packageName.trim());
+		return !NOT_FOUND_STR.equals(packageName);
 	}
 
 	public boolean hasUrl() {
 		if (url == null) {
 			return false;
 		}
-		return !"".equals(url.trim());
+		return !NOT_FOUND_STR.equals(url);
 	}
 
 	public long getDbid() {
