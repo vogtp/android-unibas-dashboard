@@ -1,6 +1,8 @@
 package ch.unibas.urz.android.dashboard.view.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -13,9 +15,11 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorAdapter.ViewBinder;
 import android.widget.TextView;
+import android.widget.Toast;
 import ch.unibas.urz.android.dashboard.R;
 import ch.unibas.urz.android.dashboard.helper.AsyncDataLoader;
 import ch.unibas.urz.android.dashboard.helper.ImageCachedLoader;
+import ch.unibas.urz.android.dashboard.helper.Logger;
 import ch.unibas.urz.android.dashboard.model.AppModel;
 import ch.unibas.urz.android.dashboard.provider.db.DB;
 
@@ -25,12 +29,12 @@ public class UnibasDashboardActivity extends Activity {
 	private Cursor appsCursor;
 
 	/** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		initaliseData();
 		setTheme(android.R.style.Theme_NoTitleBar);
-        setContentView(R.layout.main);
+		setContentView(R.layout.main);
 
 		gvApps = (GridView) findViewById(R.id.gvApps);
 
@@ -39,9 +43,9 @@ public class UnibasDashboardActivity extends Activity {
 		String[] from = new String[] { DB.DashboardApp.NAME_APPNAME, DB.DashboardApp.NAME_ICON };
 		int[] to = new int[] { R.id.tvAppName, R.id.ivAppIcon };
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.app, appsCursor, from, to);
-		gvApps.setAdapter(adapter );
+		gvApps.setAdapter(adapter);
 		adapter.setViewBinder(new ViewBinder() {
-			
+
 			@Override
 			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
 				final AppModel am = new AppModel(cursor);
@@ -74,41 +78,87 @@ public class UnibasDashboardActivity extends Activity {
 				return true;
 			}
 		});
-    }
+	}
 
 	private void initaliseData() {
 		// FIXME check for last check
-		// progressDialog = new ProgressDialog(this);
-		// progressDialog.setTitle("Updating App Information");
-		// progressDialog.setMessage("Loading Icons");
-		// progressDialog.show();
 		AsyncDataLoader adl = new AsyncDataLoader(this);
 		adl.execute(this);
 	}
 
-	private void startApp(AppModel appModel) {
-		Intent intent = null;
-		if (appModel.hasPackage()) {
-			intent = getPackageManager().getLaunchIntentForPackage(appModel.getPackageName());
+	private void startApp(final AppModel appModel) {
+		if (!startNativeApp(appModel)) {
+			if (!startWebApp(appModel)) {
+				Toast.makeText(this, R.string.msg_unable_to_start, Toast.LENGTH_LONG).show();
+			}
 		}
-		// if (appModel.getUrl().contains())
-		if (intent == null && appModel.hasUrl()) {
-			// launch url
-			intent = new Intent("android.intent.action.VIEW", Uri.parse(appModel.getUrl()));
+
+	}
+
+	private boolean startWebApp(AppModel appModel) {
+		if (appModel.hasUrl()) {
+			return false;
+		}
+		Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(appModel.getUrl()));
+		if (intent != null) {
+			try {
+				startActivity(intent);
+				return true;
+			} catch (Exception e) {
+				Logger.e("Cannot launch webpage for " + appModel.getName(), e);
+			}
+		}
+		return false;
+	}
+
+	private boolean startNativeApp(final AppModel appModel) {
+		Intent intent = null;
+		if (!appModel.hasPackage()) {
+			return false;
+		}
+		intent = getPackageManager().getLaunchIntentForPackage(appModel.getPackageName());
+		if (intent == null) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.title_install_native_app);
+			builder.setMessage(R.string.msg_install_or_use_web);
+			builder.setPositiveButton("Install app", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					maketInstall(appModel);
+				}
+			});
+			builder.setNegativeButton("Goto website", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					startWebApp(appModel);
+
+				}
+			});
+			builder.create().show();
 		}
 		if (intent != null) {
-			startActivity(intent);
+			try {
+				startActivity(intent);
+				return true;
+			} catch (Exception e) {
+				Logger.e("Cannot start  native app " + appModel.getName(), e);
+			}
 		}
+		return false;
+	}
+
+	private boolean maketInstall(AppModel appModel) {
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + appModel.getPackageName()));
+		try {
+			startActivity(intent);
+			return true;
+		} catch (Exception e) {
+			Logger.e("Cannot start  native app " + appModel.getName(), e);
+		}
+		return false;
 	}
 
 	public void loadingFinished() {
 		appsCursor.requery();
-		// if (progressDialog != null && progressDialog.isShowing()) {
-		// try {
-		// progressDialog.dismiss();
-		// } catch (Exception e) {
-		// // if device rotated this will throw... do we care?
-		// }
-		// }
 	}
 }

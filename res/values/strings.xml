@@ -3,4 +3,8 @@
     <string name="hello">Hello World, UnibasDashboardActivity!</string>
     <string name="app_name">UnibasDashboard</string>
     <string name="title">Dashboard Uni Basel</string>
+    <string name="yes">yes</string>
+    <string name="msg_unable_to_start">Unable to start</string>
+    <string name="title_install_native_app">Install native app?</string>
+    <string name="msg_install_or_use_web">Do you want to install the native app or use the website?</string>
 </resources>
