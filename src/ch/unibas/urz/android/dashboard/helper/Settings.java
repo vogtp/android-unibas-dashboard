@@ -12,8 +12,11 @@ public class Settings {
 	public final static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm");
 	private static final String UPDATE_TIME = "updateTime";
 
-	public static final int APP_LIST_GRID = 1;
-	public static final int APP_LIST_LIST = 2;
+	public static final int APP_LIST_LIST = 1;
+	public static final int APP_LIST_GRID = 2;
+
+	public static final int APP_APPEARIANCE_UNIBAS_TURQUISE = 1;
+	public static final int APP_APPEARIANCE_ANDROID = 2;
 
 	private static final long MINUTE_IN_MILLIES = 60000;
 	private static final long HOUR_IN_MILLIES = 60 * MINUTE_IN_MILLIES;
@@ -84,6 +87,14 @@ public class Settings {
 	public int getAppListStyle() {
 		try {
 			return Integer.parseInt(getPreferences().getString("prefKeyAppListStyle", "1"));
+		} catch (NumberFormatException e) {
+			return 1;
+		}
+	}
+
+	public int getAppAppearance() {
+		try {
+			return Integer.parseInt(getPreferences().getString("prefKeyAppAppearance", "1"));
 		} catch (NumberFormatException e) {
 			return 1;
 		}

@@ -42,6 +42,7 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 	private Cursor appsCursor;
 	private boolean showHidden = false;
 	private int currentAppListStyle = -1;
+	private int currentAppAppearance = -1;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -50,7 +51,6 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		if (Settings.getInstance().isUpdateNeeded()) {
 			AsyncDataLoader.loadData(this);
 		}
-		setTheme(android.R.style.Theme_NoTitleBar);
 
 		initList();
 	}
@@ -63,10 +63,17 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 
 	private void initList() {
 		int appListStyle = Settings.getInstance().getAppListStyle();
-		if (currentAppListStyle == appListStyle) {
+		int appAppearance = Settings.getInstance().getAppAppearance();
+		if (currentAppListStyle == appListStyle && currentAppAppearance == appAppearance) {
 			return;
 		}
-		setContentView(R.layout.main);
+		if (appAppearance == Settings.APP_APPEARIANCE_ANDROID) {
+			setTheme(android.R.style.Theme_Black);
+			setContentView(R.layout.main_android);
+		} else {
+			setTheme(android.R.style.Theme_NoTitleBar);
+			setContentView(R.layout.main_unibas);
+		}
 		LinearLayout llAppsAncor = (LinearLayout) findViewById(R.id.llAppsAncor);
 		ListView lvApps = (ListView) findViewById(R.id.lvApps);
 		GridView gvApps = (GridView) findViewById(R.id.gvApps);
@@ -78,9 +85,10 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 			appsList = gvApps;
 		} else {
 			llAppsAncor.removeView(gvApps);
-			appsList =  lvApps;
+			appsList = lvApps;
 		}
 		currentAppListStyle = appListStyle;
+		currentAppAppearance = appAppearance;
 		queryDatabase();
 	}
 
@@ -256,7 +264,6 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 			return false;
 		}
 	}
-
 
 	@Override
 	public Context getContext() {

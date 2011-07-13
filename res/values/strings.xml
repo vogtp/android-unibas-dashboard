@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    <string name="hello">Hello World, UnibasDashboardActivity!</string>
-    <string name="app_name">UnibasDashboard</string>
     <string name="title">Dashboard Uni Basel</string>
     <string name="yes">yes</string>
     <string name="msg_unable_to_start">Unable to start</string>
@@ -41,11 +39,21 @@
     <string name="prefGui">GUI</string>
     <string name="prefAppListStyle">App list sytle</string>
     <string-array name="prefAppListStyleEntries">
-        <item>Grid</item>
         <item>List</item>
+        <item>Grid</item>
     </string-array>
     <string-array name="prefAppListStyleValues">
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string-array name="prefAppAppearanceEntries">
+        <item>Unibas turquoise</item>
+        <item>android</item>
+    </string-array>
+    <string-array name="prefAppAppearanceValues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string name="prefAppAppearance">App appearance</string>
+    <string name="prefAppAppearanceLong">Change to look and feel of the app.</string>
 </resources>

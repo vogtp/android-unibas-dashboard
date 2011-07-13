@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:id="@+id/llAppsAncor">
+	<ListView android:layout_gravity="top" android:layout_height="fill_parent"
+		android:layout_width="fill_parent"
+		android:id="@+id/lvApps" android:layout_weight="1.9"></ListView>
+	<GridView android:layout_gravity="top" android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:id="@+id/gvApps" 
+		android:layout_weight="1.9" android:numColumns="3"></GridView>
+</LinearLayout>
