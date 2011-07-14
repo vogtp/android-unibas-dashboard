@@ -134,19 +134,18 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 
 				if (DB.DashboardApp.INDEX_ICON == columnIndex) {
 					ImageView image = (ImageView) view;
-					// if (am.getName().toLowerCase().contains("perssearch")) {
-					// image.setImageResource(R.drawable.perssearch2);
-					// } else if
-					// (am.getName().toLowerCase().contains("flexiform")) {
-					// image.setImageResource(R.drawable.flexiform2);
-					// } else {
 					Bitmap bitmap = ImageCachedLoader.getImageBitmapFromCache(UnibasDashboardActivity.this, am.getIcon());
 					if (bitmap != null) {
 						image.setImageBitmap(bitmap);
 					} else {
 						image.setImageResource(ch.unibas.urz.android.theme.R.drawable.unibasel_with_bg);
 					}
-					// }
+					if (am.isHide()) {
+						image.setAlpha(70);
+					} else {
+						image.setAlpha(255);
+					}
+
 				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {
 					((TextView) view).setText(am.getName());
 				}
