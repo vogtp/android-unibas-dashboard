@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android"> 
+    <style name="unibas_turquoise" parent="android:Theme"> 
+        <item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>   
+    </style> 
+    <style name="android" parent="android:Theme"> 
+    </style> 
+	<style name="WindowTitleBackground">     
+        <item name="android:background">#1ca6d4</item>                   
+    </style>
     <style name="appWindow">
         <item name="android:orientation">vertical</item>
         <item name="android:background">#1ca6d4</item>
-    </style>
-    <style name="topBar" parent="android:Widget.TextView">
-    	<item name="android:padding">5dp</item>
-        <item name="android:height">20dp</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">bold</item>
     </style>
     <style name="appGrid" parent="android:Widget.GridView">
         <item name="android:numColumns">3</item>

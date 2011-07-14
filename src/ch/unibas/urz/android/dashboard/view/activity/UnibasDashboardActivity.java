@@ -67,11 +67,12 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 		if (currentAppListStyle == appListStyle && currentAppAppearance == appAppearance) {
 			return;
 		}
+
 		if (appAppearance == Settings.APP_APPEARIANCE_ANDROID) {
-			setTheme(android.R.style.Theme_Black);
+			setTheme(R.style.android);
 			setContentView(R.layout.main_android);
 		} else {
-			setTheme(android.R.style.Theme_NoTitleBar);
+			setTheme(R.style.unibas_turquoise);
 			setContentView(R.layout.main_unibas);
 
 		}
