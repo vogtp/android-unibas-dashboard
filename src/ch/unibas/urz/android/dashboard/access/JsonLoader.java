@@ -16,8 +16,10 @@ import ch.unibas.urz.android.dashboard.model.AppModel;
 import ch.unibas.urz.android.dashboard.provider.db.DB;
 
 public class JsonLoader {
+	private static final String APP_JSON_URL = "http://nikt.unibas.ch/mobileapp/json.cfm";
 
-	private static final String APP_JSON_URL = "http://urz-cfaa.urz.unibas.ch/muriel/MobileApps/json.cfm";
+	// private static final String APP_JSON_URL =
+	// "http://urz-cfaa.urz.unibas.ch/muriel/MobileApps/json.cfm";
 
 	public static void loadApps(Context ctx) {
 		JSONArray jsonArray;
