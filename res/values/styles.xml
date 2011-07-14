@@ -1,22 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android"> 
-    <style name="unibas_turquoise" parent="android:Theme"> 
-        <item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>   
-    </style> 
-    <style name="android" parent="android:Theme"> 
-    </style> 
-	<style name="WindowTitleBackground">     
-        <item name="android:background">#1ca6d4</item>                   
-    </style>
-    <style name="appWindow">
-        <item name="android:orientation">vertical</item>
-        <item name="android:background">#1ca6d4</item>
-    </style>
-    <style name="appGrid" parent="android:Widget.GridView">
-        <item name="android:numColumns">3</item>
-        <item name="android:background">@android:color/white</item>
-    </style>
-    <style name="bottomBar" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/unituerkis</item>
-    </style>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 </resources>

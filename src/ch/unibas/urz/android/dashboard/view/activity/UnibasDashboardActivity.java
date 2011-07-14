@@ -144,7 +144,7 @@ public class UnibasDashboardActivity extends Activity implements LoaderCallback 
 					if (bitmap != null) {
 						image.setImageBitmap(bitmap);
 					} else {
-						image.setImageResource(R.drawable.unibasel_with_bg);
+						image.setImageResource(ch.unibas.urz.android.theme.R.drawable.unibasel_with_bg);
 					}
 					// }
 				} else if (DB.DashboardApp.INDEX_APPNAME == columnIndex) {

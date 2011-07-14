@@ -16,5 +16,5 @@
 			android:authorities="ch.unibas.urz.android.dashboard"></provider>
 		<activity android:name=".view.preferences.DashboardPreferenceActivity"></activity>
 
-	</application>
+	</application> 
 </manifest>
